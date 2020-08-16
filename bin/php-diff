@@ -11,7 +11,7 @@ $file_b = $argv[2];
 
 $n = 0;
 
-$as_lines = function($h) : array { $ret = []; while ($line = fgets($h)) $ret[] = $line; fclose($h); return $ret; };
+$as_lines = function($h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; fclose($h); return $ret; };
 
 $ha = fopen($file_a, 'r');
 $lines_a = array_reduce(
