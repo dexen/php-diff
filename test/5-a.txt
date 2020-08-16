@@ -1,0 +1,2 @@
+file with content
+with no trailing enter
