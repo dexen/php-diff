@@ -16,6 +16,7 @@ if (~ $#* 0) {
 		php bin/php-diff tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt | patch -p0
 		echo '	kdiff3' tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt
 		diff tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt }
+	echo ALL DONE.
 	exit }
 
 nr = $1
