@@ -16,12 +16,12 @@ $as_lines = function($h) : array { $ret = []; while (($line = fgets($h)) !== fal
 $ha = fopen($file_a, 'r');
 $lines_a = array_reduce(
 	$as_lines(fopen($file_a, 'r')),
-	fn(array $carry, string $line) => (array_push($carry, [ count($carry), $line, ])) ? $carry : $carry,
+	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
 	[] );
 
 $lines_b = array_reduce(
 	$as_lines(fopen($file_b, 'r')),
-	fn(array $carry, string $line) => (array_push($carry, [ count($carry), $line, ])) ? $carry : $carry,
+	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
 	[] );
 
 $packets = [];
