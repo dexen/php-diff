@@ -3,7 +3,7 @@
 
 ini_set('error_reporting', E_ALL);
 
-function td(...$a) { foreach ($a as $v) var_dump($v); die('td'); }
+function td(...$a) { foreach ($a as $v) var_dump($v); echo 'td'; die(1); }
 function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 
 $file_a = $argv[1];
