@@ -2,7 +2,7 @@
 
 namespace dexen\Diff;
 
-class DiffPacketizerLinear implements DiffPacketizer
+class PacketizerLinear implements Packetizer
 {
 	protected $lines_a;
 	protected $lines_b;
