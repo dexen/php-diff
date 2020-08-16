@@ -5,6 +5,8 @@ ini_set('error_reporting', E_ALL);
 
 require 'src/lib_diff.php';
 require 'src/Diff.php';
+require 'src/DiffPacketizer.php';
+require 'src/DiffPacketizerLinear.php';
 
 use dexen\Diff\Diff;
 

@@ -17,7 +17,12 @@ class Diff
 
 	protected $packets;
 
-	function __construct(/* future options */) {}
+	protected $Packetizer;
+
+	function __construct(/* future options */)
+	{
+		$this->Packetizer = new DiffPacketizerLinear();
+	}
 
 	protected
 	function asLines(/*resource*/ $h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; return $ret; }
@@ -64,7 +69,8 @@ class Diff
 	protected
 	function computeDiffPackets()
 	{
-		$this->packets = diff_packets_linear($this->lines_a, $this->lines_b);
+		$this->packets = #diff_packets_linear($this->lines_a, $this->lines_b);
+		$this->packets = $this->Packetizer->linesA($this->lines_a)->linesB($this->lines_b)->getDiffPackets();
 	}
 
 	protected
