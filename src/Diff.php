@@ -76,7 +76,8 @@ class Diff
 	protected
 	function serializeFileHead() : Generator
 	{
-		return diff_serialize_file_head($this->file_a, $this->file_b);
+		yield sprintf("--- %s %s\n", $this->file_a, date('Y-m-d H:i:s O', $this->mtime_a));
+		yield sprintf("+++ %s %s\n", $this->file_b, date('Y-m-d H:i:s O', $this->mtime_b));
 	}
 
 	function getDiff() : Generator

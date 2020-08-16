@@ -1,17 +1,5 @@
 <?php
 
-function diff_serialize_file_head(string $file_a, string $file_b) : Generator
-{
-	yield sprintf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O',
-		($file_a === '-')
-			? time()
-			: stat($file_a)['mtime'] ));
-	yield sprintf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O',
-		($file_b === '-')
-			? time()
-			: stat($file_b)['mtime'] ));
-}
-
 function diff_serialize_packets(array $packets) : Generator
 {
 	foreach ($packets as $packet) {
