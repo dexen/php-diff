@@ -11,13 +11,12 @@ if (~ $#* 0) {
 		rm -rf tmp
 		mkdir tmp
 		cp -ra test tmp/
+		echo files: test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 		php bin/php-diff test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 		php bin/php-diff tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt | patch -p0
-		echo kdiff3 tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt
-		diff tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt
-exit
-	}
-exit }
+		echo '	kdiff3' tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt
+		diff tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt }
+	exit }
 
 nr = $1
 php bin/php-diff test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
