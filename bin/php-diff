@@ -3,6 +3,8 @@
 
 ini_set('error_reporting', E_ALL);
 
+require 'src/lib_diff.php';
+
 function td(...$a) { foreach ($a as $v) var_dump($v); echo 'td'; die(1); }
 function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 
@@ -25,28 +27,7 @@ $lines_b = array_reduce(
 	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
 	[] );
 
-$packets = [];
-$packet = [ 'aa' => [], 'bb' => [] ];
-
-while ($lines_a && $lines_b) {
-	$aa = array_shift($lines_a);
-	$bb = array_shift($lines_b);
-
-	if ($aa[1] === $bb[1]) {
-		if ($packet['aa'] || $packet['bb']) {
-			$packets[] = $packet;
-			$packet = [ 'aa' => [], 'bb' => [] ]; } }
-	else {
-		$packet['aa'][] = $aa;
-		$packet['bb'][] = $bb; }
-}
-while ($lines_a)
-	$packet['aa'][] = array_shift($lines_a);
-while ($lines_b)
-	$packet['bb'][] = array_shift($lines_b);
-
-if ($packet['aa'] || $packet['bb'])
-	$packets[] = $packet;
+$packets = diff_packets_linear($lines_a, $lines_b);
 
 unset($lines_a, $lines_b);
 
