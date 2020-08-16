@@ -1,0 +1,17 @@
+#!/usr/bin/env rc
+
+flag e +
+
+fn TestPairNumbers {
+	ls test/* | cut -d/ -f2 | cut -d- -f1 | sort | uniq
+}
+
+if (~ $#* 0) {
+	for (nr in `{TestPairNumbers}) {
+		php bin/php-diff test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+exit
+	}
+exit }
+
+nr = $1
+php bin/php-diff test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt

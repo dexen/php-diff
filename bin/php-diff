@@ -1,0 +1,41 @@
+#!/usr/bin/env php
+<?php
+
+ini_set('error_reporting', E_ALL);
+
+function td(...$a) { foreach ($a as $v) var_dump($v); die('td'); }
+
+$file_a = $argv[1];
+$file_b = $argv[2];
+
+$lines_a = explode("\n", file_get_contents($file_a));
+$v = array_pop($lines_a);
+if ($v === '')
+	array_push($lines_a, null);
+else
+	array_push($lines_a, $v);
+$lines_b = explode("\n", file_get_contents($file_b));
+$v = array_pop($lines_b);
+if ($v === '')
+	array_push($lines_a, null);
+else
+	array_push($lines_a, $v);
+
+printf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
+printf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
+
+printf("@@ -%d,%d +%d,%d @@\n",
+	1, count($lines_a),
+	1, count($lines_b) );
+
+foreach ($lines_a as $line)
+	if ($line !== null)
+		printf("-%s\n", $line);
+if (($line !== null) || empty($lines_b))
+	printf("\\ No newline at the end of file");
+
+foreach ($lines_b as $line)
+	if ($line !== null)
+		printf("+%s\n", $line);
+if (($line !== null) || empty($lines_b))
+	printf("\\ No newline at the end of file");
