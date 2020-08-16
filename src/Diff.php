@@ -69,7 +69,6 @@ class Diff
 	protected
 	function computeDiffPackets()
 	{
-		$this->packets = #diff_packets_linear($this->lines_a, $this->lines_b);
 		$this->packets = $this->Packetizer->linesA($this->lines_a)->linesB($this->lines_b)->getDiffPackets();
 	}
 
