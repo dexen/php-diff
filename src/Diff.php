@@ -127,8 +127,8 @@ class Diff
 	function serializeDiffPackets() : Generator
 	{
 		foreach ($this->packets as $packet) {
-			$rcd_a = [ 0 => -1, 1 => '' ];
-			$rcd_b = [ 0 => -1, 1 => '' ];
+			$rcd_a = [ -1, -1, -1 ];
+			$rcd_b = [ -1, -1, -1 ];
 
 			[ $records_a, $records_b ] = [ $packet['aa'], $packet['bb'] ];
 
@@ -139,18 +139,16 @@ class Diff
 			foreach ($records_a as $rcd_a)
 				yield sprintf("-%s", substr($this->str_a, $rcd_a[1], $rcd_a[2]));
 
-			if ($rcd_a[2] > 0) {
-				$sa = substr($this->str_a, $rcd_a[1], $rcd_a[2]);
-				if ($sa[strlen($sa)-1] !== "\n")
-					yield "\n\\ No newline at the end of file\n"; }
+			if ($rcd_a[2] > 0)
+				if (substr($this->str_a, $rcd_a[1] + $rcd_a[2] - 1) !== "\n")
+					yield "\n\\ No newline at the end of file\n";
 
 			foreach ($records_b as $rcd_b)
 				yield sprintf("+%s", substr($this->str_b, $rcd_b[1], $rcd_b[2]));
 
-			if ($rcd_b[2] > 0) {
-				$sb = substr($this->str_b, $rcd_b[1], $rcd_b[2]);
-				if ($sb[strlen($sb)-1] !== "\n")
-					yield "\n\\ No newline at the end of file\n"; } }
+			if ($rcd_b[2] > 0)
+				if (substr($this->str_b, $rcd_b[1] + $rcd_b[2] - 1) !== "\n")
+					yield "\n\\ No newline at the end of file\n"; }
 	}
 
 	protected
