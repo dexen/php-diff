@@ -28,15 +28,22 @@ class PacketizerLinear implements Packetizer
 	{
 		$packets = [];
 
-		$lines_a = $this->lines_a;
-		$lines_b = $this->lines_b;
+		$records_a = $this->records_a;
+		$records_b = $this->records_b;
+		$str_a = $this->str_a;
+		$str_b = $this->str_b;
 		$packet = [ 'aa' => [], 'bb' => [] ];
 
-		while ($lines_a && $lines_b) {
-			$aa = array_shift($lines_a);
-			$bb = array_shift($lines_b);
+		$eq_p = fn($rcd_a, $rcd_b) =>
+				substr($str_a, $rcd_a[1], $rcd_a[2])
+				===
+				substr($str_b, $rcd_b[1], $rcd_b[2]);
 
-			if ($aa[1] === $bb[1]) {
+		while ($records_a && $records_b) {
+			$aa = array_shift($records_a);
+			$bb = array_shift($records_b);
+
+			if ($eq_p($aa, $bb)) {
 				if ($packet['aa'] || $packet['bb']) {
 					$packets[] = $packet;
 					$packet = [ 'aa' => [], 'bb' => [] ]; } }
@@ -44,8 +51,8 @@ class PacketizerLinear implements Packetizer
 				$packet['aa'][] = $aa;
 				$packet['bb'][] = $bb; } }
 
-		$packet['aa'] = array_merge($packet['aa'], $lines_a);
-		$packet['bb'] = array_merge($packet['bb'], $lines_b);
+		$packet['aa'] = array_merge($packet['aa'], $records_a);
+		$packet['bb'] = array_merge($packet['bb'], $records_b);
 
 		if ($packet['aa'] || $packet['bb'])
 			$packets[] = $packet;
