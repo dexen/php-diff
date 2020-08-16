@@ -27,8 +27,8 @@ printf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
 printf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
 
 printf("@@ -%d,%d +%d,%d @@\n",
-	1, count($lines_a),
-	1, count($lines_b) );
+	$lines_a[0][0]+1, count($lines_a),
+	$lines_b[0][0]+1, count($lines_b) );
 
 foreach ($lines_a as $rcd)
 	if ($rcd !== null)
