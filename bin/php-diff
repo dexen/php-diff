@@ -4,40 +4,69 @@
 ini_set('error_reporting', E_ALL);
 
 function td(...$a) { foreach ($a as $v) var_dump($v); die('td'); }
+function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 
 $file_a = $argv[1];
 $file_b = $argv[2];
 
 $n = 0;
+
+$as_lines = function($h) : array { while ($line = fgets($h)) $ret[] = $line; fclose($h); return $ret; };
+
+$ha = fopen($file_a, 'r');
 $lines_a = array_reduce(
-	explode("\n", file_get_contents($file_a)),
+	$as_lines(fopen($file_a, 'r')),
 	fn(array $carry, string $line) => (array_push($carry, [ count($carry), $line, ])) ? $carry : $carry,
 	[] );
-if ($lines_a[count($lines_a)-1][1] === '')
-	array_pop($lines_a) && array_push($lines_a, null);
 
 $lines_b = array_reduce(
-	explode("\n", file_get_contents($file_b)),
+	$as_lines(fopen($file_b, 'r')),
 	fn(array $carry, string $line) => (array_push($carry, [ count($carry), $line, ])) ? $carry : $carry,
 	[] );
-if ($lines_b[count($lines_b)-1][1] === '')
-	array_pop($lines_b) && array_push($lines_b, null);
+
+$packets = [];
+$packet = [ 'aa' => [], 'bb' => [] ];
+
+while ($lines_a && $lines_b) {
+	$aa = array_shift($lines_a);
+	$bb = array_shift($lines_b);
+
+	if ($aa[1] === $bb[1]) {
+		if ($packet['aa'] || $packet['bb']) {
+			$packets[] = $packet;
+			$packet = [ 'aa' => [], 'bb' => [] ]; } }
+	else {
+		$packet['aa'][] = $aa;
+		$packet['bb'][] = $bb; }
+}
+while ($lines_a)
+	$packet['aa'][] = array_shift($lines_a);
+while ($lines_b)
+	$packet['bb'][] = array_shift($lines_b);
+
+if ($packet['aa'] || $packet['bb'])
+	$packets[] = $packet;
+
+unset($lines_a, $lines_b);
 
 printf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
 printf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
 
-printf("@@ -%d,%d +%d,%d @@\n",
-	$lines_a[0][0]+1, count($lines_a),
-	$lines_b[0][0]+1, count($lines_b) );
+foreach ($packets as $packet) {
+	[ $lines_a, $lines_b ] = [ $packet['aa'], $packet['bb'] ];
+	printf("@@ -%d,%d +%d,%d @@\n",
+		$lines_a[0][0]+1, count($lines_a),
+		$lines_b[0][0]+1, count($lines_b) );
 
-foreach ($lines_a as $rcd)
-	if ($rcd !== null)
-		printf("-%s\n", $rcd[1]);
-if (($rcd !== null) || empty($lines_b))
-	printf("\\ No newline at the end of file");
+	foreach ($lines_a as $rcd)
+		if ($rcd[1] !== null)
+			printf("-%s", $rcd[1]);
+#	if (($rcd[1] !== '') || empty($lines_a))
+#		printf("\\ No newline at the end of file\n");
 
-foreach ($lines_b as $rcd)
-	if ($rcd !== null)
-		printf("+%s\n", $rcd[1]);
-if (($rcd !== null) || empty($lines_b))
-	printf("\\ No newline at the end of file");
+	foreach ($lines_b as $rcd)
+		if ($rcd[1] !== null)
+			printf("+%s", $rcd[1]);
+#	if (($rcd[1] !== '') || empty($lines_b))
+#		printf("\\ No newline at the end of file\n");
+}
