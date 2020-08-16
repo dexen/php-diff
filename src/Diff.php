@@ -70,7 +70,31 @@ class Diff
 	protected
 	function serializeDiffPackets() : Generator
 	{
-		return diff_serialize_packets($this->packets);
+		foreach ($this->packets as $packet) {
+			$rcd_a = [ 0 => -1, 1 => '' ];
+			$rcd_b = [ 0 => -1, 1 => '' ];
+
+			[ $lines_a, $lines_b ] = [ $packet['aa'], $packet['bb'] ];
+
+			yield sprintf("@@ -%d,%d +%d,%d @@\n",
+				$lines_a[0][0]??0, count($lines_a),
+				$lines_b[0][0]??0, count($lines_b) );
+
+			foreach ($lines_a as $rcd_a)
+				if ($rcd_a[1] !== null)
+					yield sprintf("-%s", $rcd_a[1]);
+
+			if ($rcd_a[1] !== '')
+				if ($rcd_a[1][strlen($rcd_a[1])-1] !== "\n")
+					yield "\n\\ No newline at the end of file\n";
+
+			foreach ($lines_b as $rcd_b)
+				if ($rcd_b[1] !== null)
+					yield sprintf("+%s", $rcd_b[1]);
+
+			if ($rcd_b[1] !== '')
+				if ($rcd_b[1][strlen($rcd_b[1])-1] !== "\n")
+					yield "\n\\ No newline at the end of file\n"; }
 	}
 
 	protected
