@@ -121,27 +121,27 @@ class Diff
 			$rcd_a = [ 0 => -1, 1 => '' ];
 			$rcd_b = [ 0 => -1, 1 => '' ];
 
-			[ $lines_a, $lines_b ] = [ $packet['aa'], $packet['bb'] ];
+			[ $records_a, $records_b ] = [ $packet['aa'], $packet['bb'] ];
 
 			yield sprintf("@@ -%d,%d +%d,%d @@\n",
-				$lines_a[0][0]??0, count($lines_a),
-				$lines_b[0][0]??0, count($lines_b) );
+				$records_a[0][0]??0, count($records_a),
+				$records_b[0][0]??0, count($records_b) );
 
-			foreach ($lines_a as $rcd_a)
-				if ($rcd_a[1] !== null)
-					yield sprintf("-%s", $rcd_a[1]);
+			foreach ($records_a as $rcd_a)
+				yield sprintf("-%s", substr($this->str_a, $rcd_a[1], $rcd_a[2]));
 
-			if ($rcd_a[1] !== '')
-				if ($rcd_a[1][strlen($rcd_a[1])-1] !== "\n")
-					yield "\n\\ No newline at the end of file\n";
-
-			foreach ($lines_b as $rcd_b)
-				if ($rcd_b[1] !== null)
-					yield sprintf("+%s", $rcd_b[1]);
-
-			if ($rcd_b[1] !== '')
-				if ($rcd_b[1][strlen($rcd_b[1])-1] !== "\n")
+			if ($rcd_a[2] > 0) {
+				$sa = substr($this->str_a, $rcd_a[1], $rcd_a[2]);
+				if ($sa[strlen($sa)-1] !== "\n")
 					yield "\n\\ No newline at the end of file\n"; }
+
+			foreach ($records_b as $rcd_b)
+				yield sprintf("+%s", substr($this->str_b, $rcd_b[1], $rcd_b[2]));
+
+			if ($rcd_b[2] > 0) {
+				$sb = substr($this->str_b, $rcd_b[1], $rcd_b[2]);
+				if ($sb[strlen($sb)-1] !== "\n")
+					yield "\n\\ No newline at the end of file\n"; } }
 	}
 
 	protected
