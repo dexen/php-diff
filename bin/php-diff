@@ -4,35 +4,13 @@
 ini_set('error_reporting', E_ALL);
 
 require 'src/lib_diff.php';
+require 'src/Diff.php';
+
+use dexen\Diff\Diff;
 
 function td(...$a) { foreach ($a as $v) var_dump($v); echo 'td'; die(1); }
 function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 
-$file_a = $argv[1];
-$file_b = $argv[2];
-
-$n = 0;
-
-$as_lines = function($h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; fclose($h); return $ret; };
-
-$as_lines_2 = fn(string $file) => ($file === '-') ? $as_lines(STDIN) : $as_lines(fopen($file, 'r'));
-
-$lines_a = array_reduce(
-	$as_lines_2($file_a),
-	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
-	[] );
-
-$lines_b = array_reduce(
-	$as_lines_2($file_b),
-	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
-	[] );
-
-$packets = diff_packets_linear($lines_a, $lines_b);
-
-unset($lines_a, $lines_b);
-
-foreach (diff_serialize_file_head($file_a, $file_b) as $str)
-	echo $str;
-
-foreach (diff_serialize_packets($packets) as $str)
+$Diff = new Diff();
+foreach ($Diff->fileA($argv[1])->fileB($argv[2])->getDiff() as $str)
 	echo $str;
