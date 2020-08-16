@@ -31,6 +31,8 @@ $packets = diff_packets_linear($lines_a, $lines_b);
 
 unset($lines_a, $lines_b);
 
-diff_serialize_file_head($file_a, $file_b);
+foreach (diff_serialize_file_head($file_a, $file_b) as $str)
+	echo $str;
 
-diff_serialize_packets($packets);
+foreach (diff_serialize_packets($packets) as $str)
+	echo $str;
