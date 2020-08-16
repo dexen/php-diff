@@ -39,10 +39,8 @@ class DiffPacketizerLinear implements DiffPacketizer
 				$packet['aa'][] = $aa;
 				$packet['bb'][] = $bb; } }
 
-		while ($lines_a)
-			$packet['aa'][] = array_shift($lines_a);
-		while ($lines_b)
-			$packet['bb'][] = array_shift($lines_b);
+		$packet['aa'] = array_merge($packet['aa'], $lines_a);
+		$packet['bb'] = array_merge($packet['bb'], $lines_b);
 
 		if ($packet['aa'] || $packet['bb'])
 			$packets[] = $packet;
