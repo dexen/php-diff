@@ -4,18 +4,23 @@ namespace dexen\Diff;
 
 class PacketizerLinear implements Packetizer
 {
-	protected $lines_a;
-	protected $lines_b;
+	protected $str_a;
+	protected $str_b;
 
-	function linesA(array $lines_a) : self
+	protected $records_a;
+	protected $records_b;
+
+	function linesA(string $str_a, array $records_a) : self
 	{
-		$this->lines_a = $lines_a;
+		$this->str_a = $str_a;
+		$this->records_a = $records_a;
 		return $this;
 	}
 
-	function linesB(array $lines_b) : self
+	function linesB(string $str_b, array $records_b) : self
 	{
-		$this->lines_b = $lines_b;
+		$this->str_b = $str_b;
+		$this->records_b = $records_b;
 		return $this;
 	}
 

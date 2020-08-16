@@ -111,7 +111,7 @@ class Diff
 	protected
 	function computeDiffPackets()
 	{
-		$this->packets = $this->Packetizer->linesA($this->lines_a)->linesB($this->lines_b)->getDiffPackets();
+		$this->packets = $this->Packetizer->linesA($this->str_a, $this->records_a)->linesB($this->str_b, $this->records_b)->getDiffPackets();
 	}
 
 	protected
