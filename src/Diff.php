@@ -9,8 +9,13 @@ class Diff
 	protected $file_a;
 	protected $file_b;
 
-	protected $lines_a;
-	protected $lines_b;
+	protected $str_a;
+	protected $str_b;
+	protected $records_a;
+	protected $records_b;
+
+	protected int $line_a;
+	protected int $lines_b;
 
 	protected $mtime_a;
 	protected $mtime_b;
@@ -24,9 +29,12 @@ class Diff
 		$this->Packetizer = new PacketizerLinear();
 	}
 
+		# JUNKME
 	protected
 	function asLines(/*resource*/ $h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; return $ret; }
 
+
+		# JUNKME
 	protected
 	function asLines2(string $pathname) : array
 	{
@@ -38,6 +46,7 @@ class Diff
 			return $ret; }
 	}
 
+		# JUNKME
 	protected
 	function asLineRecords(string $pathname) : array
 	{
@@ -48,12 +57,44 @@ class Diff
 	}
 
 	protected
+	function asString(string $pathname) : string
+	{
+		if ($pathname === '-')
+			$h = STDIN;
+		else
+			$h = fopen($pathname, 'r');
+		return stream_get_contents($h);
+	}
+
+	protected
+	function asRecords(string $str) : array
+	{
+		$ret = [];
+		$pos = $offset = 0;
+		$rcd = null;
+
+			# sadly, DIFF uses 1-based line numbering
+		for ($lineno = 1; $pos !== false; ++$lineno) {
+			$pos = strpos($str, "\n", $offset);
+			$xpos = ($pos === false)
+				? strlen($str)-1
+				: $pos;
+			$rcd = [ $lineno, $offset, $xpos - $offset+1 ];
+			if ($rcd[2])
+				$ret[] = $rcd;
+			$offset = $pos+1; }
+
+		return $ret;
+	}
+
+	protected
 	function asMtime(string $pathname) : int { return ($pathname === '-') ? time() : stat($pathname)['mtime']; }
 
 	function fileA(string $pathname) : self
 	{
 		$this->file_a = $pathname;
-		$this->lines_a = $this->asLineRecords($pathname);
+		$this->str_a = $this->asString($pathname);
+		$this->records_a = $this->asRecords($this->str_a);
 		$this->mtime_a = $this->asMtime($pathname);
 		return $this;
 	}
@@ -61,7 +102,8 @@ class Diff
 	function fileB(string $pathname) : self
 	{
 		$this->file_b = $pathname;
-		$this->lines_b = $this->asLineRecords($pathname);
+		$this->str_b = $this->asString($pathname);
+		$this->records_b = $this->asRecords($this->str_b);
 		$this->mtime_b = $this->asMtime($pathname);
 		return $this;
 	}
