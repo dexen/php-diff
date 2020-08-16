@@ -88,6 +88,15 @@ class Diff
 	}
 
 	protected
+	function debugRecords(string $str, array $records)
+	{
+		$a = [];
+		foreach ($records as $rcd)
+			$a[] = substr($str, $rcd[1], $rcd[2]);
+		td($a);
+	}
+
+	protected
 	function asMtime(string $pathname) : int { return ($pathname === '-') ? time() : stat($pathname)['mtime']; }
 
 	function fileA(string $pathname) : self
