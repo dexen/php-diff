@@ -13,14 +13,15 @@ $n = 0;
 
 $as_lines = function($h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; fclose($h); return $ret; };
 
-$ha = fopen($file_a, 'r');
+$as_lines_2 = fn(string $file) => ($file === '-') ? $as_lines(STDIN) : $as_lines(fopen($file, 'r'));
+
 $lines_a = array_reduce(
-	$as_lines(fopen($file_a, 'r')),
+	$as_lines_2($file_a),
 	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
 	[] );
 
 $lines_b = array_reduce(
-	$as_lines(fopen($file_b, 'r')),
+	$as_lines_2($file_b),
 	fn(array $carry, string $line) => (array_push($carry, [ count($carry)+1, $line, ])) ? $carry : $carry,
 	[] );
 
@@ -49,8 +50,14 @@ if ($packet['aa'] || $packet['bb'])
 
 unset($lines_a, $lines_b);
 
-printf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
-printf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O', stat($file_a)['mtime']));
+printf("--- %s %s\n", $file_a, date('Y-m-d H:i:s O',
+	($file_a === '-')
+		? time()
+		: stat($file_a)['mtime'] ));
+printf("+++ %s %s\n", $file_b, date('Y-m-d H:i:s O',
+	($file_b === '-')
+		? time()
+		: stat($file_b)['mtime'] ));
 
 foreach ($packets as $packet) {
 	$rcd_a = [ 0 => -1, 1 => '' ];
