@@ -154,8 +154,8 @@ class Diff
 	protected
 	function serializeFileHead() : Generator
 	{
-		yield sprintf("--- %s %s\n", $this->file_a, date('Y-m-d H:i:s O', $this->mtime_a));
-		yield sprintf("+++ %s %s\n", $this->file_b, date('Y-m-d H:i:s O', $this->mtime_b));
+		yield sprintf("--- %s\t%s\n", $this->file_a, date('Y-m-d H:i:s O', $this->mtime_a));
+		yield sprintf("+++ %s\t%s\n", $this->file_b, date('Y-m-d H:i:s O', $this->mtime_b));
 	}
 
 	function getDiff() : Generator
