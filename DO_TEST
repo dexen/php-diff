@@ -7,12 +7,12 @@ fn TestPairNumbers {
 }
 
 if (~ $#* 0) {
-	for (nr in `{TestPairNumbers}) {
-		rm -rf tmp
-		mkdir tmp
-		cp -ra test tmp/
-		cp -ra test tmp/reference/
+	rm -rf tmp
+	mkdir tmp
+	cp -ra test tmp/
+	cp -ra test tmp/reference/
 
+	for (nr in `{TestPairNumbers}) {
 		echo files: test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 		php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 
