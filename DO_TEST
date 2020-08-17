@@ -29,3 +29,4 @@ if (~ $#* 0) {
 
 nr = $1
 php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+diff -u3 test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
