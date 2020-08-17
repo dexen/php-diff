@@ -39,8 +39,8 @@ class Diff
 		$ret = [];
 		$h = $this->asStream($file);
 
-		while (($str = fgets($h)) !== false)
-			$ret[] = [ $str ];
+		for ($n = 1; ($str = fgets($h)) !== false; ++$n)
+			$ret[] = [ $n, $str ];
 
 		return $ret;
 	}
@@ -76,15 +76,15 @@ class Diff
 	protected
 	function computeDiffPackets()
 	{
-		$this->packets = $this->Packetizer->linesA($this->str_a, $this->records_a)->linesB($this->str_b, $this->records_b)->getDiffPackets();
+		$this->packets = $this->Packetizer->linesA($this->records_a)->linesB($this->records_b)->getDiffPackets();
 	}
 
 	protected
 	function serializeDiffPackets() : Generator
 	{
 		foreach ($this->packets as $packet) {
-			$rcd_a = [ -1, -1, -1 ];
-			$rcd_b = [ -1, -1, -1 ];
+			$rcd_a = [ -1, '' ];
+			$rcd_b = [ -1, '' ];
 
 			[ $records_a, $records_b ] = [ $packet['aa'], $packet['bb'] ];
 
@@ -93,17 +93,17 @@ class Diff
 				$records_b[0][0]??0, count($records_b) );
 
 			foreach ($records_a as $rcd_a)
-				yield sprintf("-%s", substr($this->str_a, $rcd_a[1], $rcd_a[2]));
+				yield sprintf("-%s", $rcd_a[1]);
 
-			if ($rcd_a[2] > 0)
-				if (substr($this->str_a, $rcd_a[1] + $rcd_a[2] - 1) !== "\n")
+			if (strlen($rcd_a[1]))
+				if ($rcd_a[1][strlen($rcd_a[1])-1] !== "\n")
 					yield "\n\\ No newline at the end of file\n";
 
 			foreach ($records_b as $rcd_b)
-				yield sprintf("+%s", substr($this->str_b, $rcd_b[1], $rcd_b[2]));
+				yield sprintf("+%s", $rcd_b[1]);
 
-			if ($rcd_b[2] > 0)
-				if (substr($this->str_b, $rcd_b[1] + $rcd_b[2] - 1) !== "\n")
+			if (strlen($rcd_b[1]))
+				if ($rcd_b[1][strlen($rcd_b[1])-1] !== "\n")
 					yield "\n\\ No newline at the end of file\n"; }
 	}
 
