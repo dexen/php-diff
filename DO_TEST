@@ -22,7 +22,8 @@ if (~ $#* 0) {
 		if (diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt > /dev/null)
 			exit 2
 			# assert the result is the same
-		diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt }
+		if ( ! diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt > /dev/null)
+			exit 3 }
 	echo ALL DONE.
 	exit }
 
