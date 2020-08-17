@@ -13,6 +13,9 @@ use dexen\Diff\Diff;
 function td(...$a) { foreach ($a as $v) var_dump($v); echo 'td'; die(1); }
 function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 
+if ($argv[1] !== '-u')
+	die(printf("Usage: php-diff -u FILE_A FILE_B\n"));
+
 $Diff = new Diff();
-foreach ($Diff->fileA($argv[1])->fileB($argv[2])->getDiff() as $str)
+foreach ($Diff->fileA($argv[2])->fileB($argv[3])->getDiff() as $str)
 	echo $str;

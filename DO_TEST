@@ -20,4 +20,4 @@ if (~ $#* 0) {
 	exit }
 
 nr = $1
-php bin/php-diff test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
