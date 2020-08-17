@@ -8,21 +8,21 @@ fn TestPairNumbers {
 
 if (~ $#* 0) {
 	for (nr in `{TestPairNumbers}) {
-		rm -rf tmp reference
-		mkdir tmp; mkdir reference
+		rm -rf tmp
+		mkdir tmp
 		cp -ra test tmp/
-		cp -ra test reference/
+		cp -ra test tmp/reference/
 
 		echo files: test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 		php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
 
 		php bin/php-diff -u tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt | patch -p0
-		diff -u reference/test/ ^ $nr ^ -a.txt reference/test/ ^ $nr ^ -b.txt | patch -p0
+		diff -u tmp/reference/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -b.txt | patch -p0
 			# assert the file was changed from the original
 		if (diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt > /dev/null)
+			exit 2
 			# assert the result is the same
-		diff tmp/test/ ^ $nr ^ -a.txt reference/test/ ^ $nr ^ -a.txt
-			exit 2 }
+		diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt }
 	echo ALL DONE.
 	exit }
 
