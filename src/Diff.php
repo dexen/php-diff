@@ -9,13 +9,8 @@ class Diff
 	protected $file_a;
 	protected $file_b;
 
-	protected $str_a;
-	protected $str_b;
 	protected $records_a;
 	protected $records_b;
-
-	protected int $line_a;
-	protected int $lines_b;
 
 	protected $mtime_a;
 	protected $mtime_b;
@@ -29,60 +24,23 @@ class Diff
 		$this->Packetizer = new PacketizerLinear();
 	}
 
-		# JUNKME
 	protected
-	function asLines(/*resource*/ $h) : array { $ret = []; while (($line = fgets($h)) !== false) $ret[] = $line; return $ret; }
-
-
-		# JUNKME
-	protected
-	function asLines2(string $pathname) : array
+	function asStream(string $pathname)
 	{
 		if ($pathname === '-')
-			return $this->asLines(STDIN);
-		else {
-			$ret = $this->asLines($h = fopen($pathname, 'r'));
-			fclose($h);
-			return $ret; }
-	}
-
-		# JUNKME
-	protected
-	function asLineRecords(string $pathname) : array
-	{
-		return array_reduce(
-			$this->asLines2($pathname),
-			fn(array $carry, string $line) => (array_push($carry, [count($carry)+1, $line])) ? $carry : $carry,
-			[] );
-	}
-
-	protected
-	function asString(string $pathname) : string
-	{
-		if ($pathname === '-')
-			$h = STDIN;
+			return STDIN;
 		else
-			$h = fopen($pathname, 'r');
-		return stream_get_contents($h);
+			return fopen($pathname, 'r');
 	}
 
 	protected
-	function asRecords(string $str) : array
+	function asRecords(string $file) : array
 	{
 		$ret = [];
-		$pos = $offset = 0;
-		$rcd = null;
+		$h = $this->asStream($file);
 
-			# sadly, DIFF uses 1-based line numbering
-		for ($lineno = 1; $pos !== false; ++$lineno) {
-			$pos = strpos($str, "\n", $offset);
-			$xpos = ($pos === false)
-				? strlen($str)-1
-				: $pos;
-			$rcd = [ $lineno, $offset, $xpos - $offset+1 ];
-			if ($rcd[2])
-				$ret[] = $rcd;
-			$offset = $pos+1; }
+		while (($str = fgets($h)) !== false)
+			$ret[] = [ $str ];
 
 		return $ret;
 	}
@@ -102,8 +60,7 @@ class Diff
 	function fileA(string $pathname) : self
 	{
 		$this->file_a = $pathname;
-		$this->str_a = $this->asString($pathname);
-		$this->records_a = $this->asRecords($this->str_a);
+		$this->records_a = $this->asRecords($this->file_a);
 		$this->mtime_a = $this->asMtime($pathname);
 		return $this;
 	}
@@ -111,8 +68,7 @@ class Diff
 	function fileB(string $pathname) : self
 	{
 		$this->file_b = $pathname;
-		$this->str_b = $this->asString($pathname);
-		$this->records_b = $this->asRecords($this->str_b);
+		$this->records_b = $this->asRecords($this->file_b);
 		$this->mtime_b = $this->asMtime($pathname);
 		return $this;
 	}
