@@ -19,14 +19,18 @@ if (~ $#* 0) {
 		php bin/php-diff -u tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt | patch -p0
 		diff -u tmp/reference/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -b.txt | patch -p0
 			# assert the file was changed from the original
-		if (diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt > /dev/null)
-			exit 2
+		if (diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt > /dev/null) {
+			echo NO CHANGES FOUND
+			diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt
+			exit 2 }
 			# assert the result is the same
-		if ( ! diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt > /dev/null)
-			exit 3 }
+		if ( ! diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt > /dev/null) {
+			echo UNEXPECTED DIFFERENCES FOUND
+			echo '	diff' -u tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt
+			exit 3 } }
 	echo ALL DONE.
 	exit }
 
 nr = $1
 php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
-diff -u3 test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+diff -u0 test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
