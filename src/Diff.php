@@ -21,7 +21,7 @@ class Diff
 
 	function __construct(/* future options */)
 	{
-		$this->Packetizer = new PacketizerLinear();
+		$this->Packetizer = new PacketizerRecursive();
 	}
 
 	protected

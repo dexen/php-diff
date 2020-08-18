@@ -7,6 +7,7 @@ require 'src/lib_diff.php';
 require 'src/Diff.php';
 require 'src/Packetizer.php';
 require 'src/PacketizerLinear.php';
+require 'src/PacketizerRecursive.php';
 
 use dexen\Diff\Diff;
 
