@@ -82,25 +82,33 @@ class Diff
 	protected
 	function serializeDiffPackets() : Generator
 	{
+		$na = 0;
+		$nb = 0;
+
 		foreach ($this->packets as $packet) {
 			$rcd_a = [ -1, '' ];
 			$rcd_b = [ -1, '' ];
 
 			[ $records_a, $records_b ] = [ $packet['aa'], $packet['bb'] ];
 
-			yield sprintf("@@ -%d,%d +%d,%d @@\n",
-				$records_a[0][0]??0, count($records_a),
-				$records_b[0][0]??0, count($records_b) );
+			if (empty($packet['is_blank']))
+				yield sprintf("@@ -%d,%d +%d,%d @@\n",
+					$na+!empty($records_a), count($records_a),
+					$nb+!empty($records_b), count($records_b) );
 
 			foreach ($records_a as $rcd_a)
-				yield sprintf("-%s", $rcd_a[1]);
+				if ($rcd_a[1] !== null)
+					yield sprintf("-%s", $rcd_a[1]);
+			$na += count($records_a);
 
 			if (strlen($rcd_a[1]))
 				if ($rcd_a[1][strlen($rcd_a[1])-1] !== "\n")
 					yield "\n\\ No newline at the end of file\n";
 
 			foreach ($records_b as $rcd_b)
-				yield sprintf("+%s", $rcd_b[1]);
+				if ($rcd_b[1] !== null)
+					yield sprintf("+%s", $rcd_b[1]);
+			$nb += count($records_b);
 
 			if (strlen($rcd_b[1]))
 				if ($rcd_b[1][strlen($rcd_b[1])-1] !== "\n")
