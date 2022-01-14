@@ -2,35 +2,16 @@
 
 flag e +
 
-fn TestPairNumbers {
-	ls test/* | cut -d/ -f2 | cut -d- -f1 | sort | uniq
-}
+mk clean
+mk
 
-if (~ $#* 0) {
-	rm -rf tmp
-	mkdir tmp
-	cp -ra test tmp/
-	cp -ra test tmp/reference/
+PhpDiff=./php-diff
+n=0
+A=test/$n/a.txt
+B=test/$n/b.txt
 
-	for (nr in `{TestPairNumbers}) {
-		echo files: test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
-		php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+$PhpDiff $A $B || true
 
-		php bin/php-diff -u tmp/test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -b.txt | patch -p0
-		diff -u tmp/reference/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -b.txt | patch -p0
-			# assert the file was changed from the original
-		if (diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt > /dev/null) {
-			echo NO CHANGES FOUND
-			diff test/ ^ $nr ^ -a.txt tmp/test/ ^ $nr ^ -a.txt
-			exit 2 }
-			# assert the result is the same
-		if ( ! diff tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt > /dev/null) {
-			echo UNEXPECTED DIFFERENCES FOUND
-			echo '	diff' -u tmp/test/ ^ $nr ^ -a.txt tmp/reference/ ^ $nr ^ -a.txt
-			exit 3 } }
-	echo ALL DONE.
-	exit }
+echo '#########'
 
-nr = $1
-php bin/php-diff -u test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
-diff -u0 test/ ^ $nr ^ -a.txt test/ ^ $nr ^ -b.txt
+diff -u0 $A $B || true
