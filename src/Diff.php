@@ -19,9 +19,9 @@ class Diff
 
 	protected $Packetizer;
 
-	function __construct(/* future options */)
+	function __construct(string $PacketizerType)
 	{
-		$this->Packetizer = new PacketizerRecursive();
+		$this->Packetizer = new $PacketizerType;
 	}
 
 	protected

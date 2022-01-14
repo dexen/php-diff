@@ -17,6 +17,6 @@ function tp(...$a) { foreach ($a as $v) var_dump($v); echo "tp()\n"; }
 if ($argv[1] !== '-u')
 	die(printf("Usage: php-diff -u FILE_A FILE_B\n"));
 
-$Diff = new Diff();
+$Diff = new Diff(dexen\Diff\PacketizerLinear::class);
 foreach ($Diff->fileA($argv[2])->fileB($argv[3])->getDiff() as $str)
 	echo $str;
