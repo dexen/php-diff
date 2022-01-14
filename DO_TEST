@@ -1,17 +1,32 @@
 #!/usr/bin/env rc
 
-flag e +
+if (~ $#* 0)
+	a=test/*
+if not
+	a = test/ ^ $*
 
-mk clean
-mk
+fn QuietDiff {
+	diff $* > /dev/null
+}
 
-PhpDiff=./php-diff
-n=0
-A=test/$n/a.txt
-B=test/$n/b.txt
+fn SimplifiedDiff {
+		# strip the sub-second mtime precision
+		# as we can't handle it cleany in PHP at this point
+	diff $* | sed -r  's#^([-+][-+][-+] [^	]+	[0-9-]+ [0-9:]+)[.][0-9]+( +)#\1\2#g'
+}
 
-$PhpDiff $A $B || true
+PhpDiff=( ./bin/php-diff -u )
 
-echo '#########'
+for (pn in $a) {
+	echo '	#' $pn
+	A=$pn/a.txt
+	B=$pn/b.txt
 
-diff -u0 $A $B || true
+	if (QuietDiff -u0 <{SimplifiedDiff -u0 $A $B} <{$PhpDiff $A $B})
+		true
+	if not {
+		echo SIGNIFICANT DIFFERENCES
+		$PhpDiff $A $B
+		echo '#######################'
+		SimplifiedDiff -u0 $A $B
+		exit 1 } }
