@@ -3,6 +3,8 @@
 
 ini_set('error_reporting', E_ALL);
 
+require __DIR__ .'/' .'php-diff2.php';
+
 require 'src/lib_diff.php';
 require 'src/Diff.php';
 require 'src/Packetizer.php';
